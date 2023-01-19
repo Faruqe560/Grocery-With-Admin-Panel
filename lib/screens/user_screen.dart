@@ -146,6 +146,31 @@ class _UserScreenState extends State<UserScreen> {
                 Text("Sign Out")
               ],
             ),
+            content: Text("Do You wanna sign out?"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  }
+                },
+                child: TextWidget(
+                  text: "Cancel",
+                  color: Colors.cyan,
+                  textSize: 18,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: TextWidget(
+                  text: "Ok",
+                  color: Colors.red,
+                  textSize: 18,
+                ),
+              ),
+            ],
           );
         });
   }
