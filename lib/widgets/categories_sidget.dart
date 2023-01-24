@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fshop2/inner_screens/cat_screen.dart';
+import 'package:fshop2/screens/categories_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:fshop2/provider/dark_theme_provider.dart';
@@ -22,7 +24,8 @@ class CategoriesWiget extends StatelessWidget {
     double _ScreenWidth = size.width;
     return InkWell(
       onTap: () {
-        print("Category Pressed");
+        Navigator.pushNamed(context, CategoryScreen.routeName,
+            arguments: catText);
       },
       child: Container(
         decoration: BoxDecoration(

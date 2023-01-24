@@ -1,10 +1,13 @@
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:fshop2/inner_screens/product_details.dart';
+import 'package:fshop2/models/products_model.dart';
 import 'package:fshop2/services/utils.dart';
 import 'package:fshop2/widgets/heart_btn.dart';
 import 'package:fshop2/widgets/price_widget.dart';
 import 'package:fshop2/widgets/text_widgets.dart';
+import 'package:provider/provider.dart';
 
 class OnSaleWidget extends StatefulWidget {
   const OnSaleWidget({super.key});
@@ -20,6 +23,7 @@ class _OnSaleWidgetState extends State<OnSaleWidget> {
     final themeState = utils.getTheme;
     final Color color = Utils(context).color;
     Size size = utils.getScreenSize;
+    final productModel = Provider.of<ProductModel>(context);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -28,7 +32,10 @@ class _OnSaleWidgetState extends State<OnSaleWidget> {
         color: Theme.of(context).cardColor.withOpacity(0.9),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: () {},
+          onTap: () {
+            Navigator.pushNamed(context, ProductDetails.routeName,
+                arguments: productModel.id);
+          },
           child: Padding(
             padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
             child: Column(
@@ -39,7 +46,7 @@ class _OnSaleWidgetState extends State<OnSaleWidget> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     FancyShimmerImage(
-                      imageUrl: "https://i.ibb.co/F0s3FHQ/Apricots.png",
+                      imageUrl: productModel.imgUrl,
                       height: size.width * 0.22,
                       width: size.width * 0.22,
                       boxFit: BoxFit.fill,
@@ -47,7 +54,7 @@ class _OnSaleWidgetState extends State<OnSaleWidget> {
                     Column(
                       children: [
                         TextWidget(
-                          text: "1KG",
+                          text: productModel.isPiece ? "piece" : "1KG",
                           color: color,
                           isTitle: true,
                           textSize: 22,
@@ -78,8 +85,8 @@ class _OnSaleWidgetState extends State<OnSaleWidget> {
                   ],
                 ),
                 PriceWidget(
-                  salePrice: 2.99,
-                  price: 5.9,
+                  salePrice: productModel.salePrice,
+                  price: productModel.price,
                   textPrice: "1",
                   isOnSale: true,
                 ),
@@ -87,7 +94,7 @@ class _OnSaleWidgetState extends State<OnSaleWidget> {
                   height: 5.0,
                 ),
                 TextWidget(
-                  text: "Product Title",
+                  text: productModel.title,
                   color: color,
                   textSize: 16,
                   isTitle: true,

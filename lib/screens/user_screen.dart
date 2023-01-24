@@ -2,6 +2,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:fshop2/provider/dark_theme_provider.dart';
+import 'package:fshop2/screens/orders/orders_screen.dart';
+import 'package:fshop2/screens/viewed_recently/viewed_screen.dart';
+import 'package:fshop2/screens/wishlist/wishlist_screen.dart';
+import 'package:fshop2/services/global_method.dart';
 import 'package:fshop2/widgets/text_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -75,19 +79,28 @@ class _UserScreenState extends State<UserScreen> {
             _listTiles(
               title: "Orders",
               icon: IconlyLight.bag,
-              onPressed: () {},
+              onPressed: () {
+                GlobalMethods.NavigateTo(
+                    ctx: context, routeName: OrderScreen.routeName);
+              },
               color: color,
             ),
             _listTiles(
               title: "Wishlist",
               icon: IconlyLight.heart,
-              onPressed: () {},
+              onPressed: () {
+                GlobalMethods.NavigateTo(
+                    ctx: context, routeName: WishlistScreen.routeName);
+              },
               color: color,
             ),
             _listTiles(
               title: "Viewed",
               icon: IconlyLight.show,
-              onPressed: () {},
+              onPressed: () {
+                GlobalMethods.NavigateTo(
+                    ctx: context, routeName: ViwedRecently.routeName);
+              },
               color: color,
             ),
             _listTiles(
@@ -116,8 +129,12 @@ class _UserScreenState extends State<UserScreen> {
             _listTiles(
               title: "Logout",
               icon: IconlyLight.logout,
-              onPressed: () async {
-                await _showLogoutDialog();
+              onPressed: () {
+                GlobalMethods.warningDialog(
+                    title: "Sign Out!",
+                    subtitle: "Do You wanna sign Out",
+                    fctn: () {},
+                    context: context);
               },
               color: color,
             ),
@@ -125,54 +142,6 @@ class _UserScreenState extends State<UserScreen> {
         )),
       ),
     );
-  }
-
-  Future<void> _showLogoutDialog() async {
-    await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Row(
-              children: [
-                Image.asset(
-                  "assets/images/warning-sign.png",
-                  height: 40,
-                  width: 40,
-                  fit: BoxFit.fill,
-                ),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Text("Sign Out")
-              ],
-            ),
-            content: Text("Do You wanna sign out?"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  if (Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  }
-                },
-                child: TextWidget(
-                  text: "Cancel",
-                  color: Colors.cyan,
-                  textSize: 18,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: TextWidget(
-                  text: "Ok",
-                  color: Colors.red,
-                  textSize: 18,
-                ),
-              ),
-            ],
-          );
-        });
   }
 
   Future<void> _showAddressDialog() async {

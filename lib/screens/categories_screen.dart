@@ -6,6 +6,7 @@ import 'package:fshop2/widgets/text_widgets.dart';
 import 'package:provider/provider.dart';
 
 class CategoriesScreen extends StatefulWidget {
+  static const routeName = "/CategoriesScreen";
   CategoriesScreen({super.key});
 
   @override
@@ -16,7 +17,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   List<Map<String, dynamic>> catInfo = [
     {
       "imgPath": "assets/images/cat/fruits.png",
-      "catText": "Fruits",
+      "catText": "fruits",
     },
     {
       "imgPath": "assets/images/cat/veg.png",

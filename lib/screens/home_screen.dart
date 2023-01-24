@@ -1,27 +1,31 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:fshop2/consts/const.dart';
+import 'package:fshop2/inner_screens/feed_screen.dart';
+import 'package:fshop2/inner_screens/on_sale_screen.dart';
+import 'package:fshop2/models/products_model.dart';
+import 'package:fshop2/providers/products_provider.dart';
+import 'package:fshop2/services/global_method.dart';
 import 'package:fshop2/services/utils.dart';
 import 'package:fshop2/widgets/feed_items.dart';
 import 'package:fshop2/widgets/on_sale_widget.dart';
 import 'package:fshop2/widgets/text_widgets.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<String> _offerImages = [
-      "assets/images/offers/Offer1.jpg",
-      "assets/images/offers/Offer2.jpg",
-      "assets/images/offers/Offer3.jpg",
-      "assets/images/offers/Offer4.jpg",
-    ];
-
     final Utils utils = Utils(context);
     final themeState = utils.getTheme;
     Size size = utils.getScreenSize;
     final Color color = Utils(context).color;
+    GlobalMethods globalMethods = GlobalMethods();
+    final ProductProviders = Provider.of<ProductProvider>(context);
+    List<ProductModel> allProducts = ProductProviders.getProducts;
+    List<ProductModel> productsOnSale = ProductProviders.getOnsaleProducts;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -32,12 +36,12 @@ class HomeScreen extends StatelessWidget {
               child: Swiper(
                 itemBuilder: (BuildContext context, int index) {
                   return Image.asset(
-                    _offerImages[index],
+                    Constss.offerImages[index],
                     fit: BoxFit.fill,
                   );
                 },
                 autoplay: true,
-                itemCount: _offerImages.length,
+                itemCount: Constss.offerImages.length,
                 pagination: SwiperPagination(
                     alignment: Alignment.bottomCenter,
                     builder: DotSwiperPaginationBuilder(
@@ -46,7 +50,10 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                GlobalMethods.NavigateTo(
+                    ctx: context, routeName: OnSaleScreen.routeName);
+              },
               child: TextWidget(
                 text: "View All",
                 color: Colors.blue,
@@ -84,10 +91,15 @@ class HomeScreen extends StatelessWidget {
                     child: SizedBox(
                       height: size.height * 0.25,
                       child: ListView.builder(
-                          itemCount: 10,
+                          itemCount: productsOnSale.length < 10
+                              ? productsOnSale.length
+                              : 10,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
-                            return OnSaleWidget();
+                            return ChangeNotifierProvider.value(
+                              value: productsOnSale[index],
+                              child: OnSaleWidget(),
+                            );
                           }),
                     ),
                   ),
@@ -107,7 +119,10 @@ class HomeScreen extends StatelessWidget {
                   ),
                   // Spacer(),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      GlobalMethods.NavigateTo(
+                          ctx: context, routeName: FeedsScreen.routeName);
+                    },
                     child: TextWidget(
                       text: "Browse All",
                       color: Colors.blue,
@@ -125,8 +140,12 @@ class HomeScreen extends StatelessWidget {
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               childAspectRatio: size.width / (size.height * 0.57),
-              children: List.generate(4, (index) {
-                return FeedWidget();
+              children: List.generate(
+                  allProducts.length < 4 ? allProducts.length : 4, (index) {
+                return ChangeNotifierProvider.value(
+                  value: allProducts[index],
+                  child: FeedWidget(),
+                );
               }),
             ),
           ],
