@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:fshop2/models/products_model.dart';
+import 'package:fshop2/providers/cart_provider.dart';
 import 'package:fshop2/providers/products_provider.dart';
 import 'package:fshop2/services/utils.dart';
 import 'package:fshop2/widgets/heart_btn.dart';
@@ -19,11 +20,11 @@ class ProductDetails extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
-  final TextEditingController _quantitycontroller =
+  final TextEditingController _quantittyTextController =
       TextEditingController(text: "1");
   @override
   void dispose() {
-    _quantitycontroller.dispose();
+    _quantittyTextController.dispose();
     // TODO: implement dispose
     super.dispose();
   }
@@ -34,12 +35,16 @@ class _ProductDetailsState extends State<ProductDetails> {
     Size size = Utils(context).getScreenSize;
     final Color color = Utils(context).color;
     final productId = ModalRoute.of(context)!.settings.arguments as String;
-    final ProductProviders = Provider.of<ProductProvider>(context);
-    final getCurrentProduct = ProductProviders.findProductById(productId);
+    final productProvider = Provider.of<ProductProvider>(context);
+    final cartProvider = Provider.of<CartProvider>(context);
+    final getCurrentProduct = productProvider.findProductById(productId);
     double usedPrice = getCurrentProduct.isOnSale
         ? getCurrentProduct.salePrice
         : getCurrentProduct.price;
-    double totalPrice = usedPrice * int.parse(_quantitycontroller.text);
+    double totalPrice = usedPrice * int.parse(_quantittyTextController.text);
+    bool? _isInCart =
+        cartProvider.getCartItems.containsKey(getCurrentProduct.id);
+
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
@@ -150,12 +155,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                     children: [
                       _quantityCountroller(
                         fctn: () {
-                          if (_quantitycontroller.text == "1") {
+                          if (_quantittyTextController.text == "1") {
                             return;
                           } else {
                             setState(() {
-                              _quantitycontroller.text =
-                                  (int.parse(_quantitycontroller.text) - 1)
+                              _quantittyTextController.text =
+                                  (int.parse(_quantittyTextController.text) - 1)
                                       .toString();
                             });
                           }
@@ -166,7 +171,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                       Flexible(
                         flex: 1,
                         child: TextField(
-                          controller: _quantitycontroller,
+                          controller: _quantittyTextController,
                           key: ValueKey("quantity"),
                           keyboardType: TextInputType.number,
                           maxLines: 1,
@@ -184,7 +189,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           onChanged: (v) {
                             setState(() {
                               if (v.isEmpty) {
-                                _quantitycontroller.text = "1";
+                                _quantittyTextController.text = "1";
                               } else {
                                 return;
                               }
@@ -195,8 +200,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                       _quantityCountroller(
                         fctn: () {
                           setState(() {
-                            _quantitycontroller.text =
-                                (int.parse(_quantitycontroller.text) + 1)
+                            _quantittyTextController.text =
+                                (int.parse(_quantittyTextController.text) + 1)
                                     .toString();
                           });
                         },
@@ -244,7 +249,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                                       isTitle: true,
                                     ),
                                     TextWidget(
-                                      text: "${_quantitycontroller.text}kg",
+                                      text:
+                                          "${_quantittyTextController.text}kg",
                                       color: color,
                                       textSize: 22,
                                       isTitle: false,
@@ -260,15 +266,28 @@ class _ProductDetailsState extends State<ProductDetails> {
                         ),
                         Flexible(
                             child: Material(
-                          color: Colors.green,
+                          color: _isInCart
+                              ? Color.fromARGB(255, 239, 14, 220)
+                              : Colors.green,
                           borderRadius: BorderRadius.circular(12.0),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: TextWidget(
-                              text: "Add to cart",
-                              color: color,
-                              textSize: 18,
-                              isTitle: true,
+                          child: InkWell(
+                            onTap: () {
+                              _isInCart
+                                  ? null
+                                  : cartProvider.addProductsToCart(
+                                      productId: getCurrentProduct.id,
+                                      quantity: int.parse(
+                                          _quantittyTextController.text));
+                            },
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: TextWidget(
+                                text: _isInCart ? "In cart" : "Add to cart",
+                                color: color,
+                                textSize: 18,
+                                isTitle: true,
+                              ),
                             ),
                           ),
                         ))
